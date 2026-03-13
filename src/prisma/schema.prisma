@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "../prisma/generated/prisma"
 }
 
 datasource db {
@@ -18,10 +18,16 @@ model Usuario {
   email String  @unique
   nome  String?
 
-  @@map("user")
+  @@map("usuario")
 }
 
+model Exame {
+  id         Int      @id @default(autoincrement())
+  tipo_exame String
+  valor      Decimal
+  descricao  String
+  resultado  String
+  data_exame DateTime
 
-model Exame{
-
+  @@map("exame")
 }

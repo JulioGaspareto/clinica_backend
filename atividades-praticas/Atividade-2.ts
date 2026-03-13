@@ -19,7 +19,7 @@ class Funcionario {
 class Programador extends Funcionario {
     bonusProgramador: number
 
-    constructor(  bonusProgramador: number){}
+    // constructor(  bonusProgramador: number){}
 
   calcularSalario():number{
         return this.salario + (this.salario * this.bonusProgramador)
