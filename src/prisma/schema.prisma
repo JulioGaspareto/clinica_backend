@@ -16,7 +16,9 @@ datasource db {
 model Usuario {
   id    Int     @id @default(autoincrement())
   email String  @unique
+  senha String
   nome  String?
+  token Token[]
 
   @@map("usuario")
 }
@@ -30,4 +32,15 @@ model Exame {
   data_exame DateTime
 
   @@map("exame")
+}
+
+model Token {
+  id        Int     @id @default(autoincrement())
+  tokens    String
+  tipo      String
+  revogado  Boolean @default(false)
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+
+  @@map("token")
 }
