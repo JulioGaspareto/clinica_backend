@@ -1,7 +1,7 @@
 import express from 'express';
-import bcrypt from 'bcrypt'
 import { prisma } from './prisma/prisma';
-import type { Exame, Usuario } from './prisma/generated/prisma/client';
+import type { Exame, Usuario, TypeToken } from './prisma/generated/prisma/client';
+import { createHash } from './utils/createHash';
 
 const app = express();
 app.use(express.json())
@@ -31,14 +31,13 @@ app.get('/usuarios/:id', async (req, res) => {
 
 app.post("/usuarios", async (req, res) => {
   console.log(req.body)
-  const saltRounds = 10
   const dadosUsuario = req.body as Usuario
-  const senhaRemaikai =  await bcrypt.hash(dadosUsuario.senha, saltRounds);
+  const hash = await createHash(dadosUsuario.senha);
   const usuarioCriado = await prisma.usuario.create({
     data: {
       email: dadosUsuario.email,
       nome: dadosUsuario.nome || null,
-      senha: senhaRemaikai
+      senha: hash
     }
   })
   return res.status(201).json(usuarioCriado)
@@ -139,3 +138,6 @@ app.delete('/exames/:id', async (req, res) => {
 app.listen(port, () => {
   console.log("Servidor ta de pé :p")
 })
+
+
+
