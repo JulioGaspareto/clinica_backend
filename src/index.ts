@@ -2,6 +2,8 @@ import express from 'express';
 import { prisma } from './prisma/prisma';
 import type { Exame, Usuario, TypeToken } from './prisma/generated/prisma/client';
 import { createHash } from './utils/createHash';
+import bcrypt from "bcrypt"
+
 
 const app = express();
 app.use(express.json())
@@ -37,7 +39,7 @@ app.post("/usuarios", async (req, res) => {
     data: {
       email: dadosUsuario.email,
       nome: dadosUsuario.nome || null,
-      senha: hash
+      senha: hash,
     }
   })
   return res.status(201).json(usuarioCriado)
@@ -141,3 +143,56 @@ app.listen(port, () => {
 
 
 
+app.post ("/login", async (req, res) => {
+  const {email, senha} = req.body as Usuario
+
+  try {
+    if (!email || !senha) {
+      return res.status(400).json({ message: "Email e senha são obrigatórios" })
+    }
+
+    const user = await prisma.usuario.findUnique({
+      where: {
+        email: email
+      }
+    })
+
+    if(!user){
+      return res.status(401).json({message: "Credenciais inválidas"})
+    }
+
+    const isPasswordValid = await bcrypt.compare(senha, user.senha)
+
+    if(!isPasswordValid){
+      return res.status(401).json({message: "Credenciais inválidas"})
+    }
+
+    return res.status(200).json({
+      message: "Login realizado com sucesso",
+      user: {
+        id: user.id,
+        email: user.email
+      }
+    })
+    
+  }catch(error){
+    console.error(error)
+    return res.status(500).json({message: 'Erro no servidor'})
+  }
+
+})
+
+
+app.post("/cadastro", async (req, res) => {
+  console.log(req.body)
+  const dadosUsuario = req.body as Usuario
+  const hash = await createHash(dadosUsuario.senha);
+  const usuarioCriado = await prisma.usuario.create({
+    data: {
+      email: dadosUsuario.email,
+      nome: dadosUsuario.nome || null,
+      senha: hash,
+    }
+  })
+  return res.status(201).json(usuarioCriado)
+})
