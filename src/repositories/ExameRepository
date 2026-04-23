@@ -1,0 +1,12 @@
+import { prisma } from "../prisma/prisma";
+import type { PrismaClient, Token, exame } from "../prisma/generated/prisma/client";
+
+export class ExameRepository {
+     constructor(private readonly prisma: PrismaClient) {
+        this.prisma = prisma 
+}
+
+
+
+
+}

@@ -45,7 +45,7 @@ exameRouter.put("/exames/:id", async (req, res) => {
       data_exame: new Date(dadosParaAtualizar.data_exame)
     },
     where: {
-      id: idExame
+      id: idExame     
     }
   })
 
